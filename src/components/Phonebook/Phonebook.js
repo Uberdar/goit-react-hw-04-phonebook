@@ -2,29 +2,15 @@ import React from 'react';
 import './PhonebookStyle.css';
 import { nanoid } from 'nanoid';
 
-class PhonebookClass extends React.Component {
-  //   static defaultState = {
-  //     contacts: [],
-  //     name: '',
-  //   };
+// eslint-disable-next-line no-unused-vars
+class OldPhonebookClass extends React.Component {
   firstFormNameId = nanoid();
   firstFormNumberId = nanoid();
-
   state = {
-    // contacts: [],
     name: '',
     number: '',
   };
-  //   handleChangeName = evt => {
-  //     this.setState({
-  //       name: evt.currentTarget.value,
-  //     });
-  //   };
-  //   handleChangeTel = evt => {
-  //     this.setState({
-  //       number: evt.currentTarget.value,
-  //     });
-  //   };
+
   mainChangeHandler = e => {
     const { name, value } = e.currentTarget;
     this.setState({
@@ -33,7 +19,6 @@ class PhonebookClass extends React.Component {
   };
   handleSubmit = e => {
     e.preventDefault();
-    // console.log(this.state);
     this.props.randomvarname(this.state);
   };
   render() {
@@ -75,5 +60,3 @@ class PhonebookClass extends React.Component {
     );
   }
 }
-
-export default PhonebookClass;

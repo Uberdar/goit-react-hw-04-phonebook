@@ -1,10 +1,73 @@
 import { Component } from 'react';
-import PhonebookClass from './Phonebook/Phonebook';
-import TodosRenderClass from './TodosRenderClass/TodosRenderClass';
+// import PhonebookClass from './Phonebook/Phonebook';
+// import TodosRenderClass from './TodosRenderClass/TodosRenderClass';
 import { nanoid } from 'nanoid';
-import SearchContact from './SearchContact/SearchContact';
+// import SearchContact from './SearchContact/SearchContact';
+import HooksSearchContact from './SearchContact/HooksSearchContact';
+import PhonebookHooks from './Phonebook/HooksPhonebook';
+import HooksTodoRender from './TodosRenderClass/HooksTodosRender';
+import { useState, useEffect } from 'react';
 
-class App extends Component {
+export default function App() {
+  const [dataBase, setDataBase] = useState(
+    (() => {
+      let x = localStorage.getItem('localDB');
+      let xx = JSON.parse(x);
+      return xx;
+    }) ?? []
+  );
+  const [searchValueApp, setSearchValueApp] = useState('');
+  const deleteWithId = DBid => {
+    setDataBase(dataBase.filter(elem => elem.id !== DBid));
+  };
+
+  const formSubmitHandler = data => {
+    const newContact = { ...data, id: nanoid() };
+    let test = dataBase.find(elem => {
+      if (elem.name === newContact.name && elem.number === newContact.number) {
+        alert('this contact has allready been added');
+        return true;
+      }
+      return false;
+    });
+    if (!test) {
+      setDataBase([newContact, ...dataBase]);
+    }
+  };
+  const showSearchedValues = data => {
+    setSearchValueApp(data.target.value);
+  };
+  const filteredContacts = () => {
+    return dataBase.filter(elem =>
+      elem.name.toLocaleLowerCase().includes(searchValueApp.toLocaleLowerCase())
+    );
+  };
+  useEffect(() => {
+    localStorage.setItem('localDB', JSON.stringify(dataBase));
+    const takeLocalBD = localStorage.getItem('localDB');
+    const parseLocalBD = JSON.parse(takeLocalBD);
+    if (parseLocalBD === null) {
+      return setDataBase([]);
+    }
+    setDataBase(parseLocalBD);
+  }, [dataBase]);
+  return (
+    <div>
+      <PhonebookHooks randomvarname={formSubmitHandler} />
+      <HooksSearchContact
+        searchValueParse={showSearchedValues}
+        parseValueToSearchContact={searchValueApp}
+      />
+      <HooksTodoRender
+        datafromdataBase={filteredContacts()}
+        deleteSpecific={deleteWithId}
+      />
+    </div>
+  );
+}
+
+// eslint-disable-next-line no-unused-vars
+class OldApp extends Component {
   state = {
     dataBase: [],
     searchValueApp: '',
@@ -57,8 +120,6 @@ class App extends Component {
     );
   };
   componentDidMount() {
-    // console.log('App componentDidMount');
-
     const takeLocalBD = localStorage.getItem('localDB');
     const parseLocalBD = JSON.parse(takeLocalBD);
     if (parseLocalBD === null) {
@@ -67,7 +128,6 @@ class App extends Component {
     this.setState({ dataBase: parseLocalBD });
   }
   componentDidUpdate(prevProps, prevState) {
-    // console.log('componentDidUpdate');
     if (this.state.dataBase !== prevState.dataBase) {
       localStorage.setItem('localDB', JSON.stringify(this.state.dataBase));
     }
@@ -77,12 +137,12 @@ class App extends Component {
     // console.log('показываю новый массив: 42', this.state.dataBase);
     return (
       <div>
-        <PhonebookClass randomvarname={this.formSubmitHandler} />
-        <SearchContact
+        <PhonebookHooks randomvarname={this.formSubmitHandler} />
+        <HooksSearchContact
           searchValueParse={this.showSearchedValues}
           parseValueToSearchContact={this.state.searchValueApp}
         />
-        <TodosRenderClass
+        <HooksTodoRender
           datafromdataBase={this.filteredContacts()}
           deleteSpecific={this.deleteWithId}
         />
@@ -91,4 +151,4 @@ class App extends Component {
   }
 }
 
-export default App;
+// export default App;
